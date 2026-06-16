@@ -204,11 +204,11 @@ def get_natural_answer(user_query, sql_query, df_result, chat_history=None):
 
 
 # ==========================================
-# GIAO DIỆN (UI/UX) - ĐỒNG BỘ ĐA MÀN HÌNH
+# GIAO DIỆN (UI/UX) - CSS CHỐNG BỂ LAYOUT
 # ==========================================
 custom_css = """
 <style>
-    /* 1. Ẩn Sidebar và Header mặc định của Streamlit */
+    /* 1. Ẩn UI mặc định của Streamlit */
     [data-testid="stSidebar"], 
     [data-testid="collapsedControl"],
     .stAppDeployButton,
@@ -218,7 +218,6 @@ custom_css = """
         display: none !important;
     }
 
-    /* 2. Nền tảng tổng thể & Container tối ưu tương thích thiết bị */
     .stApp {
         background:
             radial-gradient(circle at 10% 8%, rgba(0,194,212,0.12), transparent 26%),
@@ -232,8 +231,7 @@ custom_css = """
         padding: clamp(0.8rem, 2vw, 1.5rem) clamp(1rem, 4vw, 4rem) !important; 
     }
 
-    /* 3. ÉP HÀNG NGANG CHỐNG ĐỔ KHỐI TRÊN MOBILE (FLEXBOX HACKS) */
-    /* Ép thanh điều hướng đầu trang (Top Nav) luôn giữ một hàng */
+    /* 2. CHỐNG RỚT DÒNG CHO THANH ĐIỀU HƯỚNG TRÊN CÙNG */
     div[data-testid="stHorizontalBlock"]:has(button[title="Toggle Menu"]) {
         display: flex !important;
         flex-direction: row !important;
@@ -241,39 +239,64 @@ custom_css = """
         align-items: center !important;
         gap: 12px !important;
     }
-    div[data-testid="stHorizontalBlock"]:has(button[title="Toggle Menu"]) > div:nth-child(1) {
-        flex: 0 0 auto !important;
+    div[data-testid="stHorizontalBlock"]:has(button[title="Toggle Menu"]) > div {
         width: auto !important;
-    }
-    div[data-testid="stHorizontalBlock"]:has(button[title="Toggle Menu"]) > div:nth-child(2) {
         flex: 0 0 auto !important;
-        width: auto !important;
-    }
-    div[data-testid="stHorizontalBlock"]:has(button[title="Toggle Menu"]) > div:nth-child(3) {
-        flex: 1 1 auto !important;
+        min-width: 0 !important;
     }
 
-    /* Ép dòng Lịch sử Đoạn chat luôn nằm ngang (Tên + nút Xóa), triệt tiêu lỗi rớt hàng */
+    /* 3. CHỐNG RỚT DÒNG VÀ ĐỊNH HÌNH DÒNG LỊCH SỬ CHAT */
     div[data-testid="stHorizontalBlock"]:has(button[title="Xóa"]) {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: flex-start !important;
         gap: 8px !important;
+        margin-bottom: 8px !important;
     }
     div[data-testid="stHorizontalBlock"]:has(button[title="Xóa"]) > div:nth-child(1) {
+        width: calc(100% - 38px) !important;
         flex: 1 1 auto !important;
         min-width: 0 !important;
-        width: auto !important;
     }
     div[data-testid="stHorizontalBlock"]:has(button[title="Xóa"]) > div:nth-child(2) {
-        flex: 0 0 auto !important;
-        min-width: 28px !important;
-        width: 28px !important;
+        width: 30px !important;
+        flex: 0 0 30px !important;
+        min-width: 30px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
-    /* 4. ĐỊNH DẠNG NÚT BẤM CHUẨN ĐỒNG BỘ */
+    /* 4. NÚT XÓA TRÒN ĐỀU 30x30 TRÊN MỌI THIẾT BỊ */
+    button[title="Xóa"] {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        max-width: 30px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        background: rgba(220,50,50,0.08) !important;
+        border: 1px solid rgba(220,50,50,0.25) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+    button[title="Xóa"] p {
+        color: #cc2222 !important;
+        font-size: 14px !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    button[title="Xóa"]:hover {
+        background: rgba(220,50,50,0.18) !important;
+        transform: scale(1.1);
+    }
+
+    /* Định dạng nút chung */
     div.stButton > button {
         width: auto;
         min-width: 120px;
@@ -291,95 +314,42 @@ custom_css = """
     div.stButton > button:hover {
         transform: translateY(-2px);
         border-color: #00C2D4 !important;
-        color: #1A3A6B !important;
-        box-shadow: 0 18px 38px rgba(26, 58, 107, 0.18) !important;
     }
-
-    /* Nút Primary */
-    div.stButton > button[kind="primary"],
-    div.stButton > button[data-testid="baseButton-primary"] {
+    div.stButton > button[kind="primary"] {
         background: linear-gradient(90deg, #1A3A6B 0%, #00C2D4 100%) !important;
         border: none !important;
-        box-shadow: 0 4px 18px rgba(0,194,212,0.25) !important;
     }
-    div.stButton > button[kind="primary"] p,
-    div.stButton > button[data-testid="baseButton-primary"] p {
-        color: white !important;
-    }
+    div.stButton > button[kind="primary"] p { color: white !important; }
 
-    /* Nút ☰ toggle */
     div.stButton > button[title="Toggle Menu"] {
         min-width: 44px !important;
         width: 44px !important;
-        max-width: 44px !important;
-        height: 44px !important;
         padding: 0 !important;
         font-size: 18px !important;
         border-radius: 14px !important;
-        border: 1px solid rgba(0,194,212,0.28) !important;
-        background: rgba(255,255,255,0.92) !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
 
-    /* Nút xóa ✕ định hình vòng tròn hoàn hảo, không lệch trục */
-    div.stButton > button[title="Xóa"] {
-        min-width: 28px !important;
-        width: 28px !important;
-        max-width: 28px !important;
-        height: 28px !important;
-        padding: 0 !important;
-        font-size: 12px !important;
-        border-radius: 50% !important;
-        background: rgba(220,50,50,0.07) !important;
-        border: 1.5px solid rgba(220,50,50,0.28) !important;
-        box-shadow: none !important;
-        color: #cc2222 !important;
-        margin: 0 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    div.stButton > button[title="Xóa"] p {
-        color: #cc2222 !important;
-        line-height: 1 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    div.stButton > button[title="Xóa"]:hover {
-        background: rgba(220,50,50,0.16) !important;
-        border-color: rgba(220,50,50,0.55) !important;
-        transform: scale(1.1) !important;
-    }
-
-    /* 5. KHUNG MENU SIDEBAR LỊCH SỬ */
-    @keyframes slideRight {
-        from { opacity: 0; transform: translateX(-12px); }
-        to   { opacity: 1; transform: translateX(0); }
-    }
-
+    /* 5. VÙNG CHỨA MENU TRÁI */
     [data-testid="column"]:has(.menu-identifier) {
         background: linear-gradient(170deg, #ffffff 0%, #f0f7ff 100%) !important;
         border: 1px solid rgba(0,194,212,0.28) !important;
         border-radius: 24px !important;
         padding: 20px 14px !important;
         box-shadow: 0 8px 32px rgba(26,58,107,0.10) !important;
-        animation: slideRight 0.3s ease forwards;
     }
 
-    /* Định hình nút Chat Lịch sử */
+    /* Fix nút text bị tràn trong Menu */
     [data-testid="column"]:has(.menu-identifier) div.stButton > button:not([title="Xóa"]) {
         min-width: 0 !important;
         width: 100% !important;
         height: 40px !important;
-        max-height: 40px !important;
         padding: 0 12px !important;
         display: block !important;
         text-align: left !important;
     }
-
-    /* Cắt chữ tràn bằng dấu ... an toàn */
     [data-testid="column"]:has(.menu-identifier) div.stButton > button:not([title="Xóa"]) p {
         font-size: 13px !important;
         line-height: 40px !important;
@@ -388,7 +358,6 @@ custom_css = """
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
-        margin: 0 !important;
     }
 
     .menu-section-divider {
@@ -397,64 +366,46 @@ custom_css = """
         margin: 14px 0 10px 0;
     }
 
-    /* 6. KHUNG CHAT & Ô NHẬP LIỆU */
+    /* KHUNG CHAT */
     [data-testid="stChatMessage"] {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid rgba(0,194,212,0.18);
         border-radius: 24px;
         padding: clamp(14px, 2vw, 24px);
-        box-shadow: 0 18px 45px rgba(26, 58, 107, 0.08);
         margin-bottom: 20px;
     }
-
     [data-testid="stChatInput"] {
         border-radius: 24px !important;
         border: 1px solid rgba(0,194,212,0.4) !important;
-        box-shadow: 0 14px 38px rgba(26, 58, 107, 0.12) !important;
-        background: rgba(255,255,255,0.95) !important;
     }
 
-    [data-testid="stBottomBlockContainer"] {
-        background: transparent !important;
-        padding-bottom: 24px !important;
+    /* 6. RESPONSIVE MOBILE - GIỚI HẠN CHIỀU CAO MENU ĐỂ KHÔNG ĐẨY CHAT XUỐNG ĐÁY */
+    @media (max-width: 768px) {
+        [data-testid="column"]:has(.menu-identifier) {
+            max-height: 250px !important; /* Biến Menu thành 1 cái hộp nhỏ gọn */
+            overflow-y: auto !important;  /* Bật thanh cuộn bên trong hộp Menu */
+            padding: 16px 12px !important; 
+            border-radius: 16px !important;
+            margin-bottom: 24px !important;
+        }
+        .dashboard-hero {
+            border-radius: 20px;
+            padding: 24px 20px !important;
+        }
     }
 
-    [data-testid="stExpander"] {
-        background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
-        border: 1px solid rgba(0,194,212,0.18);
-        border-radius: 24px;
-        box-shadow: 0 16px 42px rgba(26, 58, 107, 0.10);
-        margin-top: 12px;
-    }
-
-    /* 7. BANNER HERO FLUID - CO GIÃN THEO KHÔNG GIAN MÀN HÌNH */
+    /* Băng rôn Hero */
     .dashboard-hero {
         position: relative;
-        overflow: hidden;
         width: 100%;
         min-height: 220px; 
-        background: linear-gradient(
-            90deg, #1A3A6B 0%, #00C2D4 25%, #1A3A6B 50%, #00C2D4 75%, #1A3A6B 100%
-        );
+        background: linear-gradient(90deg, #1A3A6B 0%, #00C2D4 50%, #1A3A6B 100%);
         background-size: 200% 100%;
         border-radius: 32px;
-        padding: clamp(24px, 4vw, 48px) clamp(20px, 5vw, 60px);
+        padding: clamp(24px, 4vw, 48px);
         color: white;
-        box-shadow: 0 24px 70px rgba(26, 58, 107, 0.28);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        animation: heroFade 0.9s ease both, gradientMove 10s linear infinite;
         margin-bottom: 28px;
-    }
-    .dashboard-hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background:
-            radial-gradient(circle at 85% 20%, rgba(255,255,255,0.22), transparent 24%),
-            radial-gradient(circle at 12% 80%, rgba(0,194,212,0.22), transparent 28%);
-        pointer-events: none;
+        animation: gradientMove 10s linear infinite;
     }
     .hero-badge {
         width: fit-content;
@@ -462,114 +413,29 @@ custom_css = """
         border-radius: 999px;
         background: rgba(255,255,255,0.14);
         border: 1px solid rgba(0,194,212,0.42);
-        font-size: clamp(11px, 1.3vw, 13px);
-        font-weight: 700;
-        margin-bottom: 16px;
-        backdrop-filter: blur(12px);
+        font-size: 13px; font-weight: 700; margin-bottom: 16px;
     }
-    .hero-title {
-        font-size: clamp(26px, 4.5vw, 52px);
-        font-weight: 850;
-        letter-spacing: -1.5px;
-        margin-bottom: 12px;
-        line-height: 1.1;
-    }
-    .hero-subtitle {
-        font-size: clamp(14px, 1.8vw, 18px);
-        color: #d9fbff;
-        max-width: 900px;
-        line-height: 1.5;
-    }
+    .hero-title { font-size: clamp(26px, 4.5vw, 52px); font-weight: 850; margin-bottom: 12px; }
+    .hero-subtitle { font-size: clamp(14px, 1.8vw, 18px); color: #d9fbff; }
 
-    /* 8. ĐIỀU CHỈNH RESPONSIVE TRÊN ĐIỆN THOẠI & TABLET */
-    @media (max-width: 992px) {
-        [data-testid="column"]:has(.menu-identifier) {
-            padding: 16px 12px !important; 
-        }
-    }
-
-    @media (max-width: 768px) {
-        .dashboard-hero {
-            border-radius: 20px;
-            padding: 24px 20px;
-        }
-        [data-testid="stChatMessage"] {
-            border-radius: 16px;
-        }
-        [data-testid="column"]:has(.menu-identifier) {
-            margin-bottom: 24px !important;
-        }
-    }
-
-    @keyframes heroFade {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes gradientMove {
-        from { background-position: 0% 50%; }
-        to { background-position: 200% 50%; }
-    }
+    @keyframes gradientMove { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# JS Inject căn chỉnh trực tiếp lên DOM phần tử
+# Lọc Script JS để đảm bảo nó không phá CSS
 st.markdown("""
 <script>
 (function patchUI() {
     function applyPatches() {
         document.querySelectorAll('button').forEach(function(btn) {
             var title = btn.getAttribute('title') || '';
-            var txt = btn.innerText.trim();
-
-            // Sửa nút Menu ☰
-            if (title === 'Toggle Menu' || txt === '☰') {
-                btn.style.cssText += [
-                    'min-width:44px!important',
-                    'max-width:44px!important',
-                    'width:44px!important',
-                    'height:44px!important',
-                    'padding:0!important',
-                    'border-radius:14px!important',
-                    'border:1px solid rgba(0,194,212,0.28)!important',
-                    'background:rgba(255,255,255,0.92)!important',
-                    'box-shadow:0 12px 28px rgba(26,58,107,0.10)!important',
-                    'font-size:18px!important',
-                    'display:inline-flex!important',
-                    'align-items:center!important',
-                    'justify-content:center!important'
-                ].join(';');
-            }
-
-            // Sửa nút xóa ✕ dạng tròn chuẩn
-            if (title === 'Xóa' || txt === '✕') {
-                btn.style.cssText += [
-                    'min-width:28px!important',
-                    'max-width:28px!important',
-                    'width:28px!important',
-                    'height:28px!important',
-                    'padding:0!important',
-                    'border-radius:50%!important',
-                    'background:rgba(220,50,50,0.08)!important',
-                    'border:1.5px solid rgba(220,50,50,0.32)!important',
-                    'box-shadow:none!important',
-                    'font-size:12px!important',
-                    'display:inline-flex!important',
-                    'align-items:center!important',
-                    'justify-content:center!important',
-                    'color:#bb2222!important',
-                    'margin:0!important'
-                ].join(';');
-                var p = btn.querySelector('p');
-                if (p) {
-                    p.style.color = '#bb2222';
-                    p.style.margin = '0';
-                    p.style.lineHeight = '1';
-                }
+            if (title === 'Toggle Menu' || title === 'Xóa') {
+                // Xóa bớt JS inline rườm rà, nhường lại quyền điều khiển toàn diện cho CSS phía trên
+                btn.removeAttribute('style'); 
             }
         });
     }
-
     applyPatches();
     var observer = new MutationObserver(function() { applyPatches(); });
     observer.observe(document.body, { childList: true, subtree: true });
@@ -594,7 +460,7 @@ if "show_custom_menu" not in st.session_state:
     st.session_state.show_custom_menu = True
 
 # ==========================================
-# ĐIỀU HƯỚNG ĐẦU TRANG (Sử dụng tỷ lệ số nguyên và vertical_alignment)
+# ĐIỀU HƯỚNG ĐẦU TRANG
 # ==========================================
 nav_col1, nav_col2, nav_empty = st.columns([1, 4, 15], vertical_alignment="center")
 
@@ -610,7 +476,7 @@ with nav_col2:
 st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 
 # ==========================================
-# BỐ CỤC CHÍNH (ĐA MÀN HÌNH)
+# BỐ CỤC CHÍNH
 # ==========================================
 if st.session_state.show_custom_menu:
     menu_col, main_col = st.columns([1.3, 4.7], gap="medium")
@@ -641,11 +507,9 @@ if menu_col is not None:
 
             is_active = (chat_id == st.session_state.current_chat_id)
 
-            # Sử dụng vertical_alignment="center" gốc của Streamlit để căn chỉnh nút và dấu X
-            c1, c2 = st.columns([0.82, 0.18], gap="small", vertical_alignment="center")
+            c1, c2 = st.columns([0.85, 0.15], gap="small", vertical_alignment="center")
             with c1:
-                if st.button(chat_title, key=f"btn_{chat_id}", type="primary" if is_active else "secondary",
-                             use_container_width=True):
+                if st.button(chat_title, key=f"btn_{chat_id}", type="primary" if is_active else "secondary", use_container_width=True):
                     st.session_state.current_chat_id = chat_id
                     st.rerun()
             with c2:
