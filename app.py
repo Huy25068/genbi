@@ -112,14 +112,13 @@ if not st.session_state.intro_played:
     }
 
     @keyframes lineRun {
-    from {
-        width: 0;
+        from {
+            width: 0;
+        }
+        to {
+            width: min(420px, 80vw);
+        }
     }
-
-    to {
-        width: min(420px, 80vw);
-    }
-}
 
     @keyframes subFade {
         from {
@@ -131,54 +130,6 @@ if not st.session_state.intro_played:
             transform: translateY(0);
         }
     }
-    @media (max-width: 992px) {
-
-    .hero {
-        min-height: auto;
-    }
-
-    .business-card {
-        min-height: auto;
-        padding: 28px;
-    }
-
-    .card-title {
-        font-size: 24px;
-    }
-
-    .card-desc {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .block-container {
-        padding: 0rem 1rem 1rem 1rem !important;
-    }
-
-    .hero {
-        border-radius: 20px;
-    }
-
-    .section-title {
-        font-size: 22px;
-    }
-
-    .card-icon {
-        width: 52px;
-        height: 52px;
-        font-size: 24px;
-    }
-
-    .card-title {
-        font-size: 20px;
-    }
-
-    .card-desc {
-        font-size: 14px;
-    }
-}
     </style>
 
     <div class="intro-screen">
@@ -203,8 +154,8 @@ st.markdown("""
     }
 
     .block-container {
-    max-width: 100% !important;
-    padding: 0rem 2rem 1rem 2rem !important;
+        max-width: 100% !important;
+        padding: 0rem 2rem 1rem 2rem !important;
     }
 
     [data-testid="stSidebar"],
@@ -215,30 +166,30 @@ st.markdown("""
     }
 
     .hero {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    min-height: 280px;
-    background: linear-gradient(
-        90deg,
-        #1A3A6B 0%,
-        #00C2D4 25%,
-        #1A3A6B 50%,
-        #00C2D4 75%,
-        #1A3A6B 100%
-    );
-    background-size: 200% 100%;
-    border-radius: 32px;
-    padding: clamp(24px, 4vw, 64px)
-             clamp(20px, 5vw, 76px);
-    color: white;
-    box-shadow: 0 24px 70px rgba(26, 58, 107, 0.28);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    animation: heroFade 0.9s ease both,
-               gradientMove 10s linear infinite;
-}
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        min-height: 280px;
+        background: linear-gradient(
+            90deg,
+            #1A3A6B 0%,
+            #00C2D4 25%,
+            #1A3A6B 50%,
+            #00C2D4 75%,
+            #1A3A6B 100%
+        );
+        background-size: 200% 100%;
+        border-radius: 32px;
+        padding: clamp(24px, 4vw, 64px)
+                 clamp(20px, 5vw, 76px);
+        color: white;
+        box-shadow: 0 24px 70px rgba(26, 58, 107, 0.28);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        animation: heroFade 0.9s ease both,
+                   gradientMove 10s linear infinite;
+    }
 
     .hero-badge {
         width: fit-content;
@@ -253,19 +204,19 @@ st.markdown("""
     }
 
     .hero-title {
-    font-size: clamp(34px, 5vw, 68px);
-    font-weight: 850;
-    letter-spacing: -2px;
-    margin-bottom: 18px;
-    line-height: 1.05;
-}
+        font-size: clamp(34px, 5vw, 68px);
+        font-weight: 850;
+        letter-spacing: -2px;
+        margin-bottom: 18px;
+        line-height: 1.05;
+    }
 
     .hero-subtitle {
-    font-size: clamp(15px, 2vw, 21px);
-    color: #d9fbff;
-    max-width: 980px;
-    line-height: 1.65;
-}
+        font-size: clamp(15px, 2vw, 21px);
+        color: #d9fbff;
+        max-width: 980px;
+        line-height: 1.65;
+    }
 
     .section-title {
         font-size: 28px;
@@ -347,6 +298,54 @@ st.markdown("""
         }
         to {
             background-position: 200% 50%;
+        }
+    }
+
+    /* Các Media Queries được chuyển xuống đây để không bị mất khi kết thúc Intro */
+    @media (max-width: 992px) {
+        .hero {
+            min-height: auto;
+        }
+
+        .business-card {
+            min-height: auto;
+            padding: 28px;
+        }
+
+        .card-title {
+            font-size: 24px;
+        }
+
+        .card-desc {
+            font-size: 16px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 0rem 1rem 1rem 1rem !important;
+        }
+
+        .hero {
+            border-radius: 20px;
+        }
+
+        .section-title {
+            font-size: 22px;
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            font-size: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+        }
+
+        .card-desc {
+            font-size: 14px;
         }
     }
 </style>
