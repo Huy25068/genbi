@@ -246,16 +246,13 @@ custom_css = """
         padding: 8px 18px;
         box-shadow: 0 12px 28px rgba(26, 58, 107, 0.10) !important;
         transition: 0.25s ease;
+        overflow: hidden !important; 
     }
     div.stButton > button:hover {
         transform: translateY(-2px);
         border-color: #00C2D4 !important;
         color: #1A3A6B !important;
         box-shadow: 0 18px 38px rgba(26, 58, 107, 0.18) !important;
-    }
-    div.stButton > button p {
-        color: #1A3A6B !important;
-        font-weight: 800 !important;
     }
 
     /* Nút Primary */
@@ -284,12 +281,12 @@ custom_css = """
         box-shadow: 0 12px 28px rgba(26, 58, 107, 0.10) !important;
     }
 
-    /* Nút xóa ✕ */
+    /* FIX: Nút xóa ✕ - Thu nhỏ lại và ép cứng định dạng vòng tròn */
     div.stButton > button[title="Xóa"] {
-        min-width: 30px !important;
-        width: 30px !important;
-        max-width: 30px !important;
-        height: 30px !important;
+        min-width: 28px !important;
+        width: 28px !important;
+        max-width: 28px !important;
+        height: 28px !important;
         padding: 0 !important;
         font-size: 12px !important;
         border-radius: 50% !important;
@@ -297,9 +294,16 @@ custom_css = """
         border: 1.5px solid rgba(220,50,50,0.28) !important;
         box-shadow: none !important;
         color: #cc2222 !important;
+        margin-top: 6px !important; /* Đẩy xuống cho cân bằng ngang */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     div.stButton > button[title="Xóa"] p {
         color: #cc2222 !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     div.stButton > button[title="Xóa"]:hover {
         background: rgba(220,50,50,0.16) !important;
@@ -322,9 +326,27 @@ custom_css = """
         animation: slideRight 0.3s ease forwards;
     }
 
-    [data-testid="column"]:has(.menu-identifier) div.stButton > button {
+    /* FIX: Khóa cứng độ cao nút Chat Lịch sử để không bị móp bầu dục */
+    [data-testid="column"]:has(.menu-identifier) div.stButton > button:not([title="Xóa"]) {
         min-width: 0 !important;
+        width: 100% !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        padding: 0 10px !important;
+        display: block !important;
+        text-align: left !important;
+    }
+
+    /* FIX: Xử lý chữ tràn bằng dấu ... an toàn 100% */
+    [data-testid="column"]:has(.menu-identifier) div.stButton > button:not([title="Xóa"]) p {
         font-size: 13px !important;
+        line-height: 40px !important; /* Bằng chiều cao nút */
+        display: inline-block !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
     }
 
     .menu-section-divider {
@@ -333,26 +355,17 @@ custom_css = """
         margin: 14px 0 10px 0;
     }
 
-    [data-testid="column"]:has(.menu-identifier) [data-testid="column"]:first-child div.stButton > button {
-        text-align: left !important;
-        justify-content: flex-start !important;
-        padding-left: 14px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-    }
-
     /* 5. GIAO DIỆN CHAT */
     [data-testid="stChatMessage"] {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid rgba(0,194,212,0.18);
         border-radius: 24px;
-        padding: 24px;
+        padding: clamp(16px, 2vw, 24px);
         box-shadow: 0 18px 45px rgba(26, 58, 107, 0.08);
         margin-bottom: 24px;
     }
 
-    /* Ô NHẬP CHAT - CHỈ TRANG TRÍ (ĐỂ STREAMLIT TỰ QUẢN LÝ VỊ TRÍ FIXED) */
+    /* Ô NHẬP CHAT */
     [data-testid="stChatInput"] {
         border-radius: 24px !important;
         border: 1px solid rgba(0,194,212,0.4) !important;
@@ -360,7 +373,6 @@ custom_css = """
         background: rgba(255,255,255,0.95) !important;
     }
 
-    /* Xóa nền viền trắng mặc định đằng sau thanh chat của Streamlit */
     [data-testid="stBottomBlockContainer"] {
         background: transparent !important;
         padding-bottom: 30px !important;
@@ -385,7 +397,7 @@ custom_css = """
         );
         background-size: 200% 100%;
         border-radius: 32px;
-        padding: 56px 72px; 
+        padding: clamp(32px, 4vw, 56px) clamp(24px, 5vw, 72px);
         color: white;
         box-shadow: 0 24px 70px rgba(26, 58, 107, 0.28);
         display: flex;
@@ -405,27 +417,61 @@ custom_css = """
     }
     .hero-badge {
         width: fit-content;
-        padding: 10px 16px;
+        padding: 8px 14px;
         border-radius: 999px;
         background: rgba(255,255,255,0.14);
         border: 1px solid rgba(0,194,212,0.42);
-        font-size: 14px;
+        font-size: clamp(12px, 1.5vw, 14px);
         font-weight: 700;
         margin-bottom: 22px;
         backdrop-filter: blur(12px);
     }
     .hero-title {
-        font-size: 58px; 
+        font-size: clamp(32px, 5vw, 58px);
         font-weight: 850;
         letter-spacing: -2px;
         margin-bottom: 16px;
         line-height: 1.05;
     }
     .hero-subtitle {
-        font-size: 20px; 
+        font-size: clamp(15px, 2vw, 20px);
         color: #d9fbff;
         max-width: 980px;
         line-height: 1.6;
+    }
+
+    /* 7. MEDIA QUERIES MOBILE & TABLET TUYỆT ĐỐI */
+    @media (max-width: 992px) {
+        .block-container {
+            padding: 1rem 1.5rem 1.5rem 1.5rem !important;
+        }
+
+        /* Menu Sidebar bóp nhỏ padding để dồn không gian cho nút */
+        [data-testid="column"]:has(.menu-identifier) {
+            padding: 15px 10px !important; 
+        }
+
+        .dashboard-hero {
+            border-radius: 24px;
+            min-height: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 0.8rem 1rem 1.5rem 1rem !important;
+        }
+        .dashboard-hero {
+            border-radius: 20px;
+        }
+        [data-testid="stChatMessage"] {
+            border-radius: 16px;
+        }
+
+        /* Giao diện di động tự đẩy Menu dãn ra 100% cực nét */
+        [data-testid="column"]:has(.menu-identifier) {
+            margin-bottom: 20px !important;
+        }
     }
 
     @keyframes heroFade {
@@ -440,7 +486,7 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# JS inject để patch DOM trực tiếp (Đã loại bỏ các tác động vị trí gây lỗi cho Chat Input)
+# JS inject để patch DOM trực tiếp
 st.markdown("""
 <script>
 (function patchUI() {
@@ -471,10 +517,10 @@ st.markdown("""
             // 2. Fix nút Xóa ✕
             if (title === 'Xóa' || txt === '✕') {
                 btn.style.cssText += [
-                    'min-width:30px!important',
-                    'max-width:30px!important',
-                    'width:30px!important',
-                    'height:30px!important',
+                    'min-width:28px!important',
+                    'max-width:28px!important',
+                    'width:28px!important',
+                    'height:28px!important',
                     'padding:0!important',
                     'border-radius:50%!important',
                     'background:rgba(220,50,50,0.08)!important',
@@ -484,10 +530,14 @@ st.markdown("""
                     'display:inline-flex!important',
                     'align-items:center!important',
                     'justify-content:center!important',
-                    'color:#bb2222!important'
+                    'color:#bb2222!important',
+                    'margin-top:6px!important'
                 ].join(';');
                 var p = btn.querySelector('p');
-                if (p) p.style.color = '#bb2222';
+                if (p) {
+                    p.style.color = '#bb2222';
+                    p.style.margin = '0';
+                }
             }
         });
     }
@@ -535,7 +585,7 @@ st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 # BỐ CỤC CHÍNH
 # ==========================================
 if st.session_state.show_custom_menu:
-    menu_col, main_col = st.columns([1.1, 4.9], gap="large")
+    menu_col, main_col = st.columns([1.3, 4.7], gap="medium")
 else:
     main_col = st.container()
     menu_col = None
@@ -559,18 +609,20 @@ if menu_col is not None:
         for chat_id, messages in st.session_state.conversations.items():
             chat_title = "Đoạn chat mới"
             if len(messages) > 0 and messages[0]["role"] == "user":
-                chat_title = messages[0]["content"][:32] + "…"
+                # Lấy text sạch, bỏ dòng mới
+                chat_title = messages[0]["content"].replace("\n", " ")
 
             is_active = (chat_id == st.session_state.current_chat_id)
 
-            c1, c2 = st.columns([5, 0.8])
+            # CHIA LẠI TỶ LỆ CỘT: 0.75 (75%) cho nút lịch sử, 0.25 (25%) đảm bảo an toàn cho vòng tròn 28px
+            c1, c2 = st.columns([0.75, 0.25], gap="small")
             with c1:
                 if st.button(chat_title, key=f"btn_{chat_id}", type="primary" if is_active else "secondary",
                              use_container_width=True):
                     st.session_state.current_chat_id = chat_id
                     st.rerun()
             with c2:
-                if st.button("✕", key=f"del_{chat_id}", help="Xóa", use_container_width=True):
+                if st.button("✕", key=f"del_{chat_id}", help="Xóa", use_container_width=False):
                     chats_to_delete.append(chat_id)
 
         for cid in chats_to_delete:
@@ -618,7 +670,7 @@ with main_col:
                         if df_old is not None:
                             st.dataframe(df_old, use_container_width=True)
 
-    # Khung nhập chat sẽ tự động nằm ngoan ngoãn dưới cùng màn hình (do được gọi ngoài chat_container)
+    # Khung nhập chat sẽ tự động nằm ngoan ngoãn dưới cùng màn hình
     if user_input := st.chat_input("Nhập câu hỏi phân tích dữ liệu của bạn tại đây..."):
         save_message_to_db(current_chat_id, "user", user_input)
         current_messages.append({"role": "user", "content": user_input})
