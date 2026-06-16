@@ -1,0 +1,6 @@
+streamlit
+duckdb
+groq
+pandas
+plotly
+altair

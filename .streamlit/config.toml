@@ -1,0 +1,14 @@
+[theme]
+# Màu xanh dương đậm (Classic Dark Blue)
+primaryColor = "#0A3D62"
+
+# Màu nền chính
+backgroundColor = "#FFFFFF"
+
+# Màu nền phụ (cho Sidebar và các khung phụ)
+secondaryBackgroundColor = "#F4F6F9"
+
+# Màu chữ
+textColor = "#2C3E50"
+
+font = "sans serif"
