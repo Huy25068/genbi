@@ -352,7 +352,7 @@ custom_css = """
         margin-bottom: 24px;
     }
 
-    /* Ô NHẬP CHAT - CHỈ TRANG TRÍ (ĐỂ STREAMLIT TỰ QUẢN LÝ VỊ TRÍ FIXED) */
+    /* Ô NHẬP CHAT */
     [data-testid="stChatInput"] {
         border-radius: 24px !important;
         border: 1px solid rgba(0,194,212,0.4) !important;
@@ -360,7 +360,6 @@ custom_css = """
         background: rgba(255,255,255,0.95) !important;
     }
 
-    /* Xóa nền viền trắng mặc định đằng sau thanh chat của Streamlit */
     [data-testid="stBottomBlockContainer"] {
         background: transparent !important;
         padding-bottom: 30px !important;
@@ -385,7 +384,7 @@ custom_css = """
         );
         background-size: 200% 100%;
         border-radius: 32px;
-        padding: 56px 72px; 
+        padding: clamp(32px, 4vw, 56px) clamp(24px, 5vw, 72px); 
         color: white;
         box-shadow: 0 24px 70px rgba(26, 58, 107, 0.28);
         display: flex;
@@ -409,23 +408,43 @@ custom_css = """
         border-radius: 999px;
         background: rgba(255,255,255,0.14);
         border: 1px solid rgba(0,194,212,0.42);
-        font-size: 14px;
+        font-size: clamp(12px, 1.5vw, 14px);
         font-weight: 700;
         margin-bottom: 22px;
         backdrop-filter: blur(12px);
     }
     .hero-title {
-        font-size: 58px; 
+        font-size: clamp(32px, 5vw, 58px); 
         font-weight: 850;
         letter-spacing: -2px;
         margin-bottom: 16px;
         line-height: 1.05;
     }
     .hero-subtitle {
-        font-size: 20px; 
+        font-size: clamp(15px, 2vw, 20px); 
         color: #d9fbff;
         max-width: 980px;
         line-height: 1.6;
+    }
+
+    /* MÌNH ĐÃ KHÔI PHỤC LẠI ĐOẠN NÀY ĐỂ RESPONSIVE CHO ĐIỆN THOẠI / TABLET */
+    @media (max-width: 992px) {
+        .block-container {
+            padding: 1rem 2rem 2rem 2rem !important;
+        }
+        .dashboard-hero {
+            border-radius: 24px;
+            min-height: auto;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 0.8rem 1rem 1.5rem 1rem !important;
+        }
+        .dashboard-hero {
+            border-radius: 20px;
+        }
     }
 
     @keyframes heroFade {
@@ -440,7 +459,7 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# JS inject để patch DOM trực tiếp (Đã loại bỏ các tác động vị trí gây lỗi cho Chat Input)
+# JS inject để patch DOM trực tiếp
 st.markdown("""
 <script>
 (function patchUI() {
@@ -527,7 +546,7 @@ with nav_col1:
 
 with nav_col2:
     if st.button("← Về trang chủ", use_container_width=True):
-        st.switch_page("app.py")
+        st.switch_page("Dashboard.py")
 
 st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 
@@ -618,12 +637,12 @@ with main_col:
                         if df_old is not None:
                             st.dataframe(df_old, use_container_width=True)
 
-    # Khung nhập chat sẽ tự động nằm ngoan ngoãn dưới cùng màn hình (do được gọi ngoài chat_container)
+    # Khung nhập chat
     if user_input := st.chat_input("Nhập câu hỏi phân tích dữ liệu của bạn tại đây..."):
         save_message_to_db(current_chat_id, "user", user_input)
         current_messages.append({"role": "user", "content": user_input})
 
-        # Render tin nhắn MỚI vào thẳng chat_container để đảm bảo nó hiện ở TRÊN thanh chat input
+        # Render tin nhắn MỚI
         with chat_container:
             with st.chat_message("user"):
                 st.markdown(user_input)
@@ -650,17 +669,14 @@ with main_col:
                         with st.spinner("Đang tổng hợp câu trả lời..."):
                             if df_result.empty:
                                 answer_text = "Không tìm thấy dữ liệu phù hợp với câu hỏi của bạn."
-                            elif "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0][
-                                "message"] == "NO_DATA":
+                            elif "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0]["message"] == "NO_DATA":
                                 answer_text = "Xin lỗi, Data Warehouse hiện không có dữ liệu để trả lời câu hỏi này (ví dụ: doanh thu, thông tin cá nhân khách hàng). Hệ thống chỉ lưu dữ liệu hành vi truy cập và dự đoán chuyển đổi."
                             else:
                                 answer_text = get_natural_answer(user_input, sql_generated, df_result, current_messages)
 
                         st.markdown(answer_text)
 
-                        if not df_result.empty and not (
-                                "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0][
-                            "message"] == "NO_DATA"):
+                        if not df_result.empty and not ("message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0]["message"] == "NO_DATA"):
                             st.dataframe(df_result, use_container_width=True)
 
                         with st.expander("🔍 Xem mã SQL DuckDB"):
