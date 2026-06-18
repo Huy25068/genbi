@@ -232,10 +232,10 @@ custom_css = """
         padding: 1.2rem 4rem 2.5rem 4rem !important; 
     }
 
-    /* 3. NÚT BẤM CHUNG */
+    /* 3. NÚT BẤM CHUNG - ĐÃ FIX ALIGNMENT VÀ MOBILE */
     div.stButton > button {
         width: auto;
-        min-width: 150px;
+        /* Đã xóa min-width: 150px để nút không bị ép dài ra trên điện thoại */
         height: 44px;
         border-radius: 999px !important;
         border: 1px solid rgba(0,194,212,0.28) !important;
@@ -243,19 +243,28 @@ custom_css = """
         color: #1A3A6B !important;
         font-size: 15px;
         font-weight: 800;
-        padding: 8px 18px;
+        padding: 0 24px; /* Tăng padding ngang để nhìn cân đối thay cho min-width */
         box-shadow: 0 12px 28px rgba(26, 58, 107, 0.10) !important;
         transition: 0.25s ease;
+
+        /* FIX LỆCH: Ép tất cả các nút cùng 1 kiểu hiển thị để thẳng hàng nhau */
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
     }
+
     div.stButton > button:hover {
         transform: translateY(-2px);
         border-color: #00C2D4 !important;
         color: #1A3A6B !important;
         box-shadow: 0 18px 38px rgba(26, 58, 107, 0.18) !important;
     }
+
     div.stButton > button p {
         color: #1A3A6B !important;
         font-weight: 800 !important;
+        margin: 0 !important; /* Xóa margin thừa của text bên trong */
     }
 
     /* Nút Primary */
@@ -268,43 +277,6 @@ custom_css = """
     div.stButton > button[kind="primary"] p,
     div.stButton > button[data-testid="baseButton-primary"] p {
         color: white !important;
-    }
-
-    /* Nút ☰ toggle */
-    div.stButton > button[title="Toggle Menu"] {
-        min-width: 44px !important;
-        width: 44px !important;
-        max-width: 44px !important;
-        height: 44px !important;
-        padding: 0 !important;
-        font-size: 18px !important;
-        border-radius: 14px !important;
-        border: 1px solid rgba(0,194,212,0.28) !important;
-        background: rgba(255,255,255,0.92) !important;
-        box-shadow: 0 12px 28px rgba(26, 58, 107, 0.10) !important;
-    }
-
-    /* Nút xóa ✕ */
-    div.stButton > button[title="Xóa"] {
-        min-width: 30px !important;
-        width: 30px !important;
-        max-width: 30px !important;
-        height: 30px !important;
-        padding: 0 !important;
-        font-size: 12px !important;
-        border-radius: 50% !important;
-        background: rgba(220,50,50,0.07) !important;
-        border: 1.5px solid rgba(220,50,50,0.28) !important;
-        box-shadow: none !important;
-        color: #cc2222 !important;
-    }
-    div.stButton > button[title="Xóa"] p {
-        color: #cc2222 !important;
-    }
-    div.stButton > button[title="Xóa"]:hover {
-        background: rgba(220,50,50,0.16) !important;
-        border-color: rgba(220,50,50,0.55) !important;
-        transform: scale(1.12) !important;
     }
 
     /* 4. KHUNG MENU SIDEBAR */
@@ -333,10 +305,10 @@ custom_css = """
         margin: 14px 0 10px 0;
     }
 
+    /* Ép text nút Lịch sử sang trái */
     [data-testid="column"]:has(.menu-identifier) [data-testid="column"]:first-child div.stButton > button {
-        text-align: left !important;
         justify-content: flex-start !important;
-        padding-left: 14px !important;
+        padding-left: 18px !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         white-space: nowrap !important;
@@ -352,7 +324,6 @@ custom_css = """
         margin-bottom: 24px;
     }
 
-    /* Ô NHẬP CHAT */
     [data-testid="stChatInput"] {
         border-radius: 24px !important;
         border: 1px solid rgba(0,194,212,0.4) !important;
@@ -427,7 +398,7 @@ custom_css = """
         line-height: 1.6;
     }
 
-    /* MÌNH ĐÃ KHÔI PHỤC LẠI ĐOẠN NÀY ĐỂ RESPONSIVE CHO ĐIỆN THOẠI / TABLET */
+    /* ĐẢM BẢO KHÔNG VỠ TRÊN ĐIỆN THOẠI */
     @media (max-width: 992px) {
         .block-container {
             padding: 1rem 2rem 2rem 2rem !important;
@@ -459,12 +430,12 @@ custom_css = """
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
-# JS inject để patch DOM trực tiếp
+# JS inject để chỉnh kích thước cụ thể cho nút icon (☰ và ✕)
+# Chú ý: display đã được cấu hình trong CSS ở trên, không bị đá nhau nữa.
 st.markdown("""
 <script>
 (function patchUI() {
     function applyPatches() {
-        // 1. Fix nút ☰ Toggle Menu
         document.querySelectorAll('button').forEach(function(btn) {
             var title = btn.getAttribute('title') || '';
             var txt = btn.innerText.trim();
@@ -476,18 +447,10 @@ st.markdown("""
                     'width:44px!important',
                     'height:44px!important',
                     'padding:0!important',
-                    'border-radius:14px!important',
-                    'border:1px solid rgba(0,194,212,0.28)!important',
-                    'background:rgba(255,255,255,0.92)!important',
-                    'box-shadow:0 12px 28px rgba(26,58,107,0.10)!important',
-                    'font-size:18px!important',
-                    'display:inline-flex!important',
-                    'align-items:center!important',
-                    'justify-content:center!important'
+                    'border-radius:14px!important'
                 ].join(';');
             }
 
-            // 2. Fix nút Xóa ✕
             if (title === 'Xóa' || txt === '✕') {
                 btn.style.cssText += [
                     'min-width:30px!important',
@@ -500,9 +463,6 @@ st.markdown("""
                     'border:1.5px solid rgba(220,50,50,0.32)!important',
                     'box-shadow:none!important',
                     'font-size:12px!important',
-                    'display:inline-flex!important',
-                    'align-items:center!important',
-                    'justify-content:center!important',
                     'color:#bb2222!important'
                 ].join(';');
                 var p = btn.querySelector('p');
@@ -537,16 +497,18 @@ if "show_custom_menu" not in st.session_state:
 # ==========================================
 # HAI NÚT TRÊN CÙNG BÊN TRÁI
 # ==========================================
-nav_col1, nav_col2, nav_empty = st.columns([0.3, 1.5, 8.2], vertical_alignment="center")
+# Căn giữa vertical và tùy chỉnh tỷ lệ an toàn
+nav_col1, nav_col2, nav_empty = st.columns([0.4, 2.0, 7.6], vertical_alignment="center")
 
 with nav_col1:
-    if st.button("☰", help="Toggle Menu", use_container_width=True):
+    # LƯU Ý: KHÔNG dùng use_container_width=True ở đây để nút không dài ra trên đt
+    if st.button("☰", help="Toggle Menu"):
         st.session_state.show_custom_menu = not st.session_state.show_custom_menu
         st.rerun()
 
 with nav_col2:
     if st.button("← Về trang chủ", use_container_width=True):
-        st.switch_page("Dashboard.py")
+        st.switch_page("app.py")
 
 st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 
@@ -582,14 +544,17 @@ if menu_col is not None:
 
             is_active = (chat_id == st.session_state.current_chat_id)
 
-            c1, c2 = st.columns([5, 0.8])
+            # Căn giữa thẳng hàng nút Lịch sử và nút Xóa
+            c1, c2 = st.columns([4.5, 1], vertical_alignment="center")
+
             with c1:
                 if st.button(chat_title, key=f"btn_{chat_id}", type="primary" if is_active else "secondary",
                              use_container_width=True):
                     st.session_state.current_chat_id = chat_id
                     st.rerun()
             with c2:
-                if st.button("✕", key=f"del_{chat_id}", help="Xóa", use_container_width=True):
+                # LƯU Ý: KHÔNG dùng use_container_width=True để nút Xóa không bị kéo giãn
+                if st.button("✕", key=f"del_{chat_id}", help="Xóa"):
                     chats_to_delete.append(chat_id)
 
         for cid in chats_to_delete:
@@ -669,14 +634,17 @@ with main_col:
                         with st.spinner("Đang tổng hợp câu trả lời..."):
                             if df_result.empty:
                                 answer_text = "Không tìm thấy dữ liệu phù hợp với câu hỏi của bạn."
-                            elif "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0]["message"] == "NO_DATA":
+                            elif "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0][
+                                "message"] == "NO_DATA":
                                 answer_text = "Xin lỗi, Data Warehouse hiện không có dữ liệu để trả lời câu hỏi này (ví dụ: doanh thu, thông tin cá nhân khách hàng). Hệ thống chỉ lưu dữ liệu hành vi truy cập và dự đoán chuyển đổi."
                             else:
                                 answer_text = get_natural_answer(user_input, sql_generated, df_result, current_messages)
 
                         st.markdown(answer_text)
 
-                        if not df_result.empty and not ("message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0]["message"] == "NO_DATA"):
+                        if not df_result.empty and not (
+                                "message" in df_result.columns and len(df_result) == 1 and df_result.iloc[0][
+                            "message"] == "NO_DATA"):
                             st.dataframe(df_result, use_container_width=True)
 
                         with st.expander("🔍 Xem mã SQL DuckDB"):
