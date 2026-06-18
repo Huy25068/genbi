@@ -232,10 +232,9 @@ custom_css = """
         padding: 1.2rem 4rem 2.5rem 4rem !important; 
     }
 
-    /* 3. NÚT BẤM CHUNG - ĐÃ FIX ALIGNMENT VÀ MOBILE */
+    /* 3. NÚT BẤM CHUNG */
     div.stButton > button {
         width: auto;
-        /* Đã xóa min-width: 150px để nút không bị ép dài ra trên điện thoại */
         height: 44px;
         border-radius: 999px !important;
         border: 1px solid rgba(0,194,212,0.28) !important;
@@ -243,11 +242,9 @@ custom_css = """
         color: #1A3A6B !important;
         font-size: 15px;
         font-weight: 800;
-        padding: 0 24px; /* Tăng padding ngang để nhìn cân đối thay cho min-width */
+        padding: 0 24px; 
         box-shadow: 0 12px 28px rgba(26, 58, 107, 0.10) !important;
         transition: 0.25s ease;
-
-        /* FIX LỆCH: Ép tất cả các nút cùng 1 kiểu hiển thị để thẳng hàng nhau */
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -264,7 +261,7 @@ custom_css = """
     div.stButton > button p {
         color: #1A3A6B !important;
         font-weight: 800 !important;
-        margin: 0 !important; /* Xóa margin thừa của text bên trong */
+        margin: 0 !important; 
     }
 
     /* Nút Primary */
@@ -305,7 +302,6 @@ custom_css = """
         margin: 14px 0 10px 0;
     }
 
-    /* Ép text nút Lịch sử sang trái */
     [data-testid="column"]:has(.menu-identifier) [data-testid="column"]:first-child div.stButton > button {
         justify-content: flex-start !important;
         padding-left: 18px !important;
@@ -398,23 +394,51 @@ custom_css = """
         line-height: 1.6;
     }
 
-    /* ĐẢM BẢO KHÔNG VỠ TRÊN ĐIỆN THOẠI */
-    @media (max-width: 992px) {
-        .block-container {
-            padding: 1rem 2rem 2rem 2rem !important;
-        }
-        .dashboard-hero {
-            border-radius: 24px;
-            min-height: auto;
-        }
-    }
-
+    /* =========================================================
+       FIX RỚT DÒNG TRÊN ĐIỆN THOẠI (NGĂN ST.COLUMNS XẾP CHỒNG)
+       ========================================================= */
     @media (max-width: 768px) {
         .block-container {
             padding: 0.8rem 1rem 1.5rem 1rem !important;
         }
         .dashboard-hero {
             border-radius: 20px;
+        }
+
+        /* 1. ÉP LỊCH SỬ CHAT VÀ NÚT X NẰM NGANG */
+        [data-testid="column"]:has(.menu-identifier) [data-testid="stHorizontalBlock"] {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        [data-testid="column"]:has(.menu-identifier) [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(1) {
+            width: calc(100% - 40px) !important;
+            min-width: calc(100% - 40px) !important;
+        }
+        [data-testid="column"]:has(.menu-identifier) [data-testid="stHorizontalBlock"] > [data-testid="column"]:nth-child(2) {
+            width: 40px !important;
+            min-width: 40px !important;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* 2. ÉP TOP NAV (☰ VÀ VỀ TRANG CHỦ) NẰM NGANG */
+        [data-testid="stHorizontalBlock"]:has(.top-nav-marker) {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        [data-testid="stHorizontalBlock"]:has(.top-nav-marker) > [data-testid="column"]:nth-child(1) {
+            width: 55px !important;
+            min-width: 55px !important;
+        }
+        [data-testid="stHorizontalBlock"]:has(.top-nav-marker) > [data-testid="column"]:nth-child(2) {
+            width: calc(100% - 55px) !important;
+            min-width: calc(100% - 55px) !important;
+        }
+        /* Giấu luôn cột thứ 3 trống trải trên đt cho gọn */
+        [data-testid="stHorizontalBlock"]:has(.top-nav-marker) > [data-testid="column"]:nth-child(3) {
+            display: none !important;
         }
     }
 
@@ -431,7 +455,6 @@ custom_css = """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # JS inject để chỉnh kích thước cụ thể cho nút icon (☰ và ✕)
-# Chú ý: display đã được cấu hình trong CSS ở trên, không bị đá nhau nữa.
 st.markdown("""
 <script>
 (function patchUI() {
@@ -497,18 +520,18 @@ if "show_custom_menu" not in st.session_state:
 # ==========================================
 # HAI NÚT TRÊN CÙNG BÊN TRÁI
 # ==========================================
-# Căn giữa vertical và tùy chỉnh tỷ lệ an toàn
 nav_col1, nav_col2, nav_empty = st.columns([0.4, 2.0, 7.6], vertical_alignment="center")
 
 with nav_col1:
-    # LƯU Ý: KHÔNG dùng use_container_width=True ở đây để nút không dài ra trên đt
+    # Đánh dấu thẻ div này để CSS nhận diện khung điều hướng trên điện thoại
+    st.markdown("<div class='top-nav-marker'></div>", unsafe_allow_html=True)
     if st.button("☰", help="Toggle Menu"):
         st.session_state.show_custom_menu = not st.session_state.show_custom_menu
         st.rerun()
 
 with nav_col2:
     if st.button("← Về trang chủ", use_container_width=True):
-        st.switch_page("app.py")
+        st.switch_page("app.py")  # <-- Đã sửa lại tên file app.py chuẩn của bạn
 
 st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
 
@@ -544,7 +567,6 @@ if menu_col is not None:
 
             is_active = (chat_id == st.session_state.current_chat_id)
 
-            # Căn giữa thẳng hàng nút Lịch sử và nút Xóa
             c1, c2 = st.columns([4.5, 1], vertical_alignment="center")
 
             with c1:
@@ -553,7 +575,6 @@ if menu_col is not None:
                     st.session_state.current_chat_id = chat_id
                     st.rerun()
             with c2:
-                # LƯU Ý: KHÔNG dùng use_container_width=True để nút Xóa không bị kéo giãn
                 if st.button("✕", key=f"del_{chat_id}", help="Xóa"):
                     chats_to_delete.append(chat_id)
 
